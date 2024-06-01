@@ -2,23 +2,44 @@ import { NextResponse } from "next/server";
 import {prisma} from '@/libs/prisma'
 
 export async function GET(){
-
-    const notes = await prisma.note.findMany()
-    console.log(notes)
-    return NextResponse.json(notes)
+    try{
+        const notes = await prisma.note.findMany()
+        return NextResponse.json(notes)
+    }catch(error){
+        if(error instanceof Error){
+            return NextResponse.json(
+            {
+                messsage: error.message
+            },{
+                status: 500,
+            })
+        }
+    }
+    
 }
 
 
 export async function POST(request: Request){
 
-    const {title, content} = await request.json()
+    try{
+        const {title, content} = await request.json()
 
-    const newNote = await prisma.note.create({
-        data:{
-            title,
-            content
+        const newNote = await prisma.note.create({
+            data:{
+                title,
+                content
+            }
+        })
+
+        return NextResponse.json(newNote)
+    }catch(error){
+        if(error instanceof Error){
+            return NextResponse.json({
+                message: error.message
+            },
+            {
+               status: 500 
+            })
         }
-    })
-
-    return NextResponse.json(newNote)
+    }
 }
