@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 import {prisma} from '@/libs/prisma'
 
 export async function GET(){
@@ -24,6 +24,12 @@ export async function POST(request: Request){
     try{
         const {title, content} = await request.json()
 
+        if(!title){
+            return NextResponse.json({
+                message: 'Title is required'
+            })
+        }
+
         const newNote = await prisma.note.create({
             data:{
                 title,
@@ -34,6 +40,7 @@ export async function POST(request: Request){
         return NextResponse.json(newNote)
     }catch(error){
         if(error instanceof Error){
+            if(error)
             return NextResponse.json({
                 message: error.message
             },

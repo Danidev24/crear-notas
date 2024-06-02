@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import {prisma} from '@/libs/prisma'
 
 interface Params{
@@ -45,7 +46,14 @@ export async function DELETE(request: Request, {params}: Params){
 
         return NextResponse.json(deleteNote)
     }catch(error){
-        if(error instanceof Error){
+        if(error instanceof Prisma.PrismaClientKnownRequestError){
+            if(error.code === 'P2025'){
+                return NextResponse.json({
+                    message: 'Note not found'
+                },{
+                    status: 404
+                })
+            }
             return NextResponse.json({
                 message: error.message
             },{
@@ -55,8 +63,37 @@ export async function DELETE(request: Request, {params}: Params){
     }
 }
 
-export function PUT(request: Request){
-    return NextResponse.json({
-        message: 'updating single note...'
-    })
+export async function PUT(request: Request, {params}: Params){
+
+    try{
+        const { title, content } = await request.json();
+    
+        const updtateNote = await prisma.note.update({
+            where:{
+                id: Number(params.id)
+            },
+            data: {
+                title,
+                content
+            }
+        })
+
+        return NextResponse.json({message: "Note update", data: updtateNote})
+
+    }catch(error){
+        if(error instanceof Prisma.PrismaClientKnownRequestError){
+            if(error.code === 'P2025'){
+                return NextResponse.json({
+                    message: 'Record to update not found.'
+                },{
+                    status: 404
+                })
+            }
+            return NextResponse.json({
+                message: error.message
+            },{
+                status: 500
+            })
+        }
+    }
 }
