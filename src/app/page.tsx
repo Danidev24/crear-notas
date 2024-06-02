@@ -1,23 +1,23 @@
+'use client'
 import { NoteForm } from "@/components/NoteForm";
 import './globals.css'
+import { useEffect} from "react"
+import { useNotes } from "@/context/NoteContext";
 
-interface Note {
-  id: number;
-  title: string;
-  content: string
-}
-async function getNotes(): Promise<Note[]>{
-  const notes = await fetch('http://localhost:3000/api/notes')
-  const data = await notes.json()
-  return data
-}
-export default async function Home() {
-  const notes: Note[] = await getNotes();
+
+export default function Home() {
+
+  const {notes, getNotes} = useNotes()
+
+  useEffect(()=>{
+    getNotes()
+  }, [])
+
   return (
     <div className="flex items-center justify-center h-screen">
       <div>
         <NoteForm />
-        {notes.map((note: Note)=>(
+        {notes.map((note)=>(
           <div 
             key={note.id}
             className="bg-slate-400 p-4 my-2">
