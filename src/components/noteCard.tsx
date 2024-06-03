@@ -1,10 +1,10 @@
 import React from 'react'
-import { Note } from '@/interfaces/Note'
+import { Note } from '@prisma/client'
 import { useNotes } from '@/context/NoteContext'
 
 export function NoteCard({note}: {note:Note}) {
 
-    const {deleteNote} = useNotes()
+    const {deleteNote, setSelectedNote} = useNotes()
     
   return (
     <div key={note.id} className="bg-slate-400 p-4 my-2 flex justify-between">
@@ -16,11 +16,15 @@ export function NoteCard({note}: {note:Note}) {
             <button
                 onClick={()=> {
                     if(confirm('Are you sure you want to delete this note ? ')){
-                        deleteNote(note.id)
+                        deleteNote(Number(note.id))
                     }
                 }}>
                 Delete</button>
-            <button>Edit</button>
+            <button
+                onClick={()=>{
+                    setSelectedNote(note)
+                }}
+            >Edit</button>
         </div>
     </div>
   )

@@ -1,14 +1,4 @@
-export interface Note{
-    id: number;
-    title: string;
-    content: string;
-}
+import { Note } from "@prisma/client"
 
-export interface NoteContextType {
-    notes : Note[];
-    getNotes: () => Promise<void>;
-    createNote: (note: CreateNote) => Promise<void>;
-    deleteNote: (id: number)=> Promise<void>;
-}
-
-export type CreateNote = Omit<Note, 'id'>
+export type CreateNote = Omit<Note, 'id' | 'createdAt'| 'updatedAt'>
+export type UpdateNote = Partial<CreateNote>
